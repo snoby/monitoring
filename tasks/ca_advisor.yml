@@ -1,0 +1,34 @@
+---
+- name: add config folder for ca_advisor
+  file:
+    path: "/etc/ca_advisor"
+    state: "directory"
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - configuration
+
+#- name: Create the env file for running ca advisor
+
+- name: Render the ca_advisor systemd template
+  template:
+    src: "ca_advisor.systemd.j2"
+    dest: "/etc/systemd/system/ca_advisor.service"
+    owner: root
+    group: root
+    mode: "0644"
+  register: "ca_advisor_systemd_config"
+  notify:
+    - "ca_advisor systemd restart"
+  tags:
+    - configuration
+
+- name: "Enable and start the ca advisor systemd service"
+  systemd:
+    name: ca_advisor
+    state: started
+    enabled: True
+    daemon_reload: yes
+  tags:
+    - configuration

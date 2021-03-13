@@ -1,0 +1,6 @@
+---
+# defaults file for monitoring
+ca_advisor_container_name: ca_advisor
+ca_advisor_container: gcr.io/cadvisor/cadvisor
+ca_advisor_version: v0.38.8
+ca_advisor_host_port: 9180

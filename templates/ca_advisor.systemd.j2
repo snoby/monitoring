@@ -1,0 +1,45 @@
+[Unit]
+Description=CA advisor running in docker container
+# Start this unit only after docker has started
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+TimeoutStartSec=0
+Restart=always
+# The following lines start with '-' because they are allowed to fail without
+# causing startup to fail.
+#
+
+# Kill the old instance, if it's still running for some reason
+ExecStartPre=-/usr/bin/docker stop {{ ca_advisor_container_name }}
+# Remove the old instance, if it stuck around
+ExecStartPre=-/usr/bin/docker rm {{ ca_advisor_container_name }}
+ExecStart=/usr/bin/docker run  \
+  --rm                                         \
+  --log-driver=journald                        \
+  --log-opt labels=location                    \
+  --log-opt tag={{ ca_advisor_container_name }}        \
+  -t                                          \
+  --name={{ ca_advisor_container_name}}                   \
+  --sysctl net.ipv6.conf.all.disable_ipv6=1    \
+  -v /:/rootfs:ro			       \
+  -v /var/run:/var/run:ro		       \
+  -v /var/lib/docker:/var/lib/docker:ro        \
+  -v /sys:/sys:ro                              \
+  -v /dev/disk/:/dev/disk:ro                   \
+  --privileged                                 \
+  -e PUID="$UID"                               \
+  -e PGID="$UID"                               \
+  --device=/dev/kmsg                           \
+  -p "{{ ca_advisor_host_port }}:8080"         \
+  {{ ca_advisor_container }}:{{ca_advisor_version}} --raw_cgroup_prefix_whitelist=/docker/
+
+
+# On exit, stop the container
+ExecStop=/usr/bin/docker stop {{ ca_advisor_container_name }}
+ExecStop=-/usr/bin/docker rm {{ ca_advisor_container_name }}
+[Install]
+WantedBy=multi-user.target
+Alias=caadvisor,ca-advisor

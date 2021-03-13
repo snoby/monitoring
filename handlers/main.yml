@@ -1,0 +1,9 @@
+---
+# handlers file for monitoring
+# handlers file for ansible-drone
+- name: "ca_advisor systemd restart"
+  systemd:
+    name: ca_advisor
+    state: restarted
+    enabled: True
+    daemon_reload: yes
