@@ -1,0 +1,42 @@
+[Unit]
+Description=Node Exporter running in docker container
+# Start this unit only after docker has started
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+TimeoutStartSec=0
+Restart=always
+# The following lines start with '-' because they are allowed to fail without
+# causing startup to fail.
+#
+
+# Kill the old instance, if it's still running for some reason
+ExecStartPre=-/usr/bin/docker stop {{ nodexporter_container_name }}
+# Remove the old instance, if it stuck around
+ExecStartPre=-/usr/bin/docker rm {{ nodexporter_container_name }}
+ExecStart=/usr/bin/docker run  \
+  --rm                                         \
+  --log-driver=journald                        \
+  --log-opt labels=location                    \
+  --log-opt tag={{ nodexporter_container_name }}        \
+  -t                                          \
+  --name={{ nodexporter_container_name}}                   \
+  -v "/:/host:ro,rslave"                      \
+  --network host                              \
+  --sysctl net.ipv6.conf.all.disable_ipv6=1    \
+  --privileged                                 \
+  -e PUID="$UID"                               \
+  -e PGID="$UID"                               \
+  -p "{{ nodexporter_host_port }}:9100"         \
+  {{ nodexporter_container }}:{{nodexporter_version}} --path.rootfs=/host --collector.systemd --collector.processes '--path.sysfs=/host/sys' '--path.procfs=/host/proc' '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($$|/)'
+
+
+# On exit, stop the container
+ExecStop=/usr/bin/docker stop {{ nodexporter_container_name }}
+ExecStop=-/usr/bin/docker rm {{ nodexporter_container_name }}
+[Install]
+WantedBy=multi-user.target
+Alias=nodexporter
+

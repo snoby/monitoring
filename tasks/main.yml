@@ -1,3 +1,4 @@
 ---
 # tasks file for monitoring
 - include: ca_advisor.yml
+- include: nodexporter.yml

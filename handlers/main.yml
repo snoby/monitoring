@@ -7,3 +7,10 @@
     state: restarted
     enabled: True
     daemon_reload: yes
+
+- name: "nodexporter systemd restart"
+  systemd:
+    name: nodexporter
+    state: restarted
+    enabled: True
+    daemon_reload: yes

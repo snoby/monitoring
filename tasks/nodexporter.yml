@@ -1,0 +1,34 @@
+---
+- name: add config folder for nodexporter
+  file:
+    path: "/etc/nodexporter"
+    state: "directory"
+    owner: root
+    group: root
+    mode: "0644"
+  tags:
+    - configuration
+
+#- name: Create the env file for running ca advisor
+
+- name: Render the nodexporter systemd template
+  template:
+    src: "nodexporter.systemd.j2"
+    dest: "/etc/systemd/system/nodexporter.service"
+    owner: root
+    group: root
+    mode: "0644"
+  register: "nodexporter_systemd_config"
+  notify:
+    - "nodexporter systemd restart"
+  tags:
+    - configuration
+
+- name: "Enable and start the ca advisor systemd service"
+  systemd:
+    name: nodexporter
+    state: started
+    enabled: True
+    daemon_reload: yes
+  tags:
+    - configuration
