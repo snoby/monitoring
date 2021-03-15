@@ -8,3 +8,7 @@ This role will deploy ca advisor and node exporter as systemd units
 Testing
 =======
 Testing can be done with drone with 'drone exec' or look at the .drone.yml file for how to run the molecule commands for testing.
+
+
+To run locally you need python packages:
+ansible molecule molecule-docker ansible-lint yamllint
