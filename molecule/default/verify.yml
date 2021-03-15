@@ -3,8 +3,34 @@
 
 - name: Verify
   hosts: all
-  gather_facts: false
+  gather_facts: true
   tasks:
-  - name: Example assertion
-    assert:
-      that: true
+    - name: "Verify that ca advisor service is running"
+      service:
+        name: "ca_advisor"
+        enabled: true
+        state: started
+      check_mode: yes
+      register: svc
+
+    - name: "Verify that the services are running"
+      assert:
+        that:
+          - svc.changed is false
+        success_msg: "CA Advisor service is running"
+        fail_msg: "CA Advisor is not running for some reason"
+
+    - name: "Verify that node exporterservice is running"
+      service:
+        name: "nodexporter"
+        enabled: true
+        state: started
+      check_mode: yes
+      register: svc
+
+    - name: "Verify that the services are running"
+      assert:
+        that:
+          - svc.changed is false
+        success_msg: "Node Exporter service is running"
+        fail_msg: "Node Exporter is not running for some reason"

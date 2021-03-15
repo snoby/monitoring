@@ -9,8 +9,6 @@
   tags:
     - configuration
 
-#- name: Create the env file for running ca advisor
-
 - name: Render the nodexporter systemd template
   template:
     src: "nodexporter.systemd.j2"
@@ -24,7 +22,7 @@
   tags:
     - configuration
 
-- name: "Enable and start the ca advisor systemd service"
+- name: "Enable and start the nodexporter systemd service"
   systemd:
     name: nodexporter
     state: started

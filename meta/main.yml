@@ -1,6 +1,6 @@
 galaxy_info:
   role_name: monitoring
-  author: Matt Snoby
+  author: snoby
   description: installs prometheus style metric scrapers via systemd
   company: none
 

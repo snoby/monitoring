@@ -6,6 +6,7 @@ driver:
 platforms:
   - name: ubuntu
     image: geerlingguy/docker-ubuntu2004-ansible
+    #image: iotapi322/moleculetester
     command: "/lib/systemd/systemd"
     pre_build_image: true
     tmpfs:

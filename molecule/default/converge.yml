@@ -1,10 +1,6 @@
 ---
 - name: Converge
   hosts: all
-  tasks:
-    - name: "Include monitoring"
-      include_role:
-        name: "monitoring"
 
   pre_tasks:
     - name: Install prerequisites for Docker repository
@@ -30,3 +26,8 @@
       apt:
         name: ["docker-ce", "docker-ce-cli", "containerd.io"]
         update_cache: yes
+
+  tasks:
+    - name: "Include monitoring"
+      include_role:
+        name: "monitoring"

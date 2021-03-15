@@ -9,8 +9,6 @@
   tags:
     - configuration
 
-#- name: Create the env file for running ca advisor
-
 - name: Render the ca_advisor systemd template
   template:
     src: "ca_advisor.systemd.j2"

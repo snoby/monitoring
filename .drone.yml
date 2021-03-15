@@ -1,0 +1,37 @@
+---
+kind: pipeline
+type: docker
+name: Monitoring role
+# Need to define workspace as role name so molecule can find it
+workspace:
+  path: /drone/monitoring
+
+trigger:
+  event: [push, pull_request]
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: Test check in
+    #image: quay.io/ansible/toolset
+    image: iotapi322/moleculetester:v1
+    commands:
+      - molecule -v test
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
+
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
