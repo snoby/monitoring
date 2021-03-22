@@ -18,7 +18,7 @@ steps:
     #image: quay.io/ansible/toolset
     image: iotapi322/moleculetester:v1
     commands:
-      - molecule -v test
+      - molecule test
     privileged: true
     volumes:
       - name: dockersock
