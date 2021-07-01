@@ -1,0 +1,12 @@
+extends: default
+rules:
+  #line-length: disable
+
+skip_list:
+  - "306"
+exclude_paths:
+  - .venv
+  - .cache
+  - vscode
+
+verbosity: 3

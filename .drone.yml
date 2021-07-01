@@ -14,11 +14,16 @@ platform:
   arch: amd64
 
 steps:
+  - name: Lint
+    image: quay.io/ansible/toolset
+
   - name: Test check in
     #image: quay.io/ansible/toolset
     image: iotapi322/moleculetester:v1
     commands:
-      - molecule test
+      - molecule lint
+      - molecule converge && molecule idempotence
+      - molecule destroy
     privileged: true
     volumes:
       - name: dockersock

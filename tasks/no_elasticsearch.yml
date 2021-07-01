@@ -1,0 +1,14 @@
+- name: "Disable and stop the elasticsearch_monitoring systemd service"
+  systemd:
+    name: elasticsearch_monitoring
+    state: stopped
+    enabled: False
+    daemon_reload: yes
+  tags:
+    - es
+- name: "Delete systemd service files."
+  file:
+    path: /etc/systemd/system/elasticsearch_monitoring.service
+    state: absent
+  tags:
+    - es

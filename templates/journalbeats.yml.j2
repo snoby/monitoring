@@ -1,0 +1,27 @@
+journalbeat.inputs:
+- paths: []
+  seek: cursor
+  cursor_seek_fallback: tail
+
+processors:
+- add_cloud_metadata: ~
+- add_process_metadata:
+    match_pids: [system.process.ppid]
+    target: system.process.parent
+- add_docker_metadata:
+      host: "unix:///var/run/docker.sock"
+      match_pids: ["process.pid", "process.ppid"]
+- add_host_metadata:
+
+#output.elasticsearch:
+#  hosts: [ {{ journalbeats_ES_hosts }} ]
+#  protocol: https
+#  username: {{ journalbeats_username }}
+#  password: {{ journalbeats_password }}
+#  ssl.verification_mode: none
+
+
+
+output.elasticsearch:
+  hosts: [ {{ journalbeats_ES_hosts }} ]
+  protocol: http

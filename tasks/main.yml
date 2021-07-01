@@ -2,3 +2,15 @@
 # tasks file for monitoring
 - include: ca_advisor.yml
 - include: nodexporter.yml
+- include: journalbeats.yml
+
+#
+# If we want to delete the elastic search monitoring that is there now.
+#
+- include: no_elasticsearch.yml
+  when: DELETE_ELASTIC_SEARCH_MONITORING | default(false) | bool == true
+#
+# If this is an elastic search node enable the elasticseaerch scrapers
+#
+- include: elasticsearch.yml
+  when: ENABLE_ELASTIC_SEARCH_MONITORING | default(false) | bool == true

@@ -14,3 +14,21 @@
     state: restarted
     enabled: True
     daemon_reload: yes
+
+- name: "journalbeats systemd restart"
+  systemd:
+    name: journalbeats
+    state: restarted
+    enabled: True
+    daemon_reload: yes
+
+- name: "es_exporter systemd restart"
+  systemd:
+    name: elasticsearch_monitoring
+    state: restarted
+    enabled: True
+    daemon_reload: yes
+  notify: make sure the es monitoring is running
+
+- name: "make sure the es monitoring is running"
+  wait_for: host=localhost port=9114 timeout=3

@@ -10,3 +10,26 @@ nodexporter_container_name: nodexporter
 nodexporter_container: prom/node-exporter
 nodexporter_version: latest
 nodexporter_host_port: 9100
+
+# defaults nodexporter
+journalbeats_container_name: journalbeats
+journalbeats_container: docker.elastic.co/beats/journalbeat-oss
+journalbeats_version: 7.12.1
+journalbeats_home_dir: "/etc/journalbeats"
+journalbeats_ES_hosts: "es-data1.mattsnoby.com:9200,es-data2.mattsnoby.com:9200,es-data3.mattsnoby.com:9200"
+journalbeats_username: admin
+journalbeats_password: admin
+
+elasticsearch_container_name: es_exporter
+elasticsearch_container: quay.io/prometheuscommunity/elasticsearch-exporter
+elasticsearch_version: v1.2.0
+es_arguments_true:
+  - cluster_settings
+  - indices
+  - indices_settings
+  - shards
+  - all
+es_args_values:
+  - name: timeout
+    value:
+      - 50s

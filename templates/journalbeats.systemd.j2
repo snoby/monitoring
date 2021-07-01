@@ -1,0 +1,39 @@
+[Unit]
+Description=Journal Beats running in docker container
+# Start this unit only after docker has started
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+TimeoutStartSec=0
+Restart=always
+# The following lines start with '-' because they are allowed to fail without
+# causing startup to fail.
+#
+
+# Kill the old instance, if it's still running for some reason
+ExecStartPre=-/usr/bin/docker stop {{ journalbeats_container_name }}
+# Remove the old instance, if it stuck around
+ExecStartPre=-/usr/bin/docker rm {{ journalbeats_container_name }}
+ExecStart=/usr/bin/docker run                              \
+  --rm                                                     \
+  -t                                                       \
+  --name={{ journalbeats_container_name}}                   \
+  --user root                                               \
+  -v "{{journalbeats_home_dir}}/journalbeats.yml:/usr/share/journalbeat/journalbeat.yml"  \
+  -v "/var/log/journal:/var/log/journal"                   \
+  -v "/etc/machine-id:/etc/machine-id"                     \
+  -v "/run/systemd:/run/systemd"                           \
+  -v "/etc/hostname:/etc/hostname"                           \
+  --network=host                                           \
+  --privileged                                             \
+  {{ journalbeats_container }}:{{journalbeats_version}}  -e -strict.perms=false
+
+
+# On exit, stop the container
+ExecStop=-/usr/bin/docker stop {{ journalbeats_container_name }}
+ExecStop=-/usr/bin/docker rm {{ journalbeats_container_name }}
+[Install]
+WantedBy=multi-user.target
+Alias=journalbeats

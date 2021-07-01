@@ -1,0 +1,45 @@
+---
+- name: add config folder for journalbeats
+  file:
+    path: "{{ journalbeats_home_dir }}"
+    state: "directory"
+    owner: root
+    group: root
+    mode: "u=rw,g=wx,o=rwx"
+  tags:
+    - jb
+
+- name: Render the journalbeats systemd template
+  template:
+    src: "journalbeats.systemd.j2"
+    dest: "/etc/systemd/system/journalbeats.service"
+    owner: root
+    group: root
+    mode: "0644"
+  register: "journalbeats_systemd_config"
+  notify:
+    - "journalbeats systemd restart"
+  tags:
+    - jb
+
+- name: Render the journalbeats env config"
+  template:
+    src: "journalbeats.yml.j2"
+    dest: "{{ journalbeats_home_dir }}/journalbeats.yml"
+    owner: root
+    group: root
+    mode: "u=rw,g=wx,o=rwx"
+  register: "journalbeats_env_config"
+  notify:
+    - "journalbeats systemd restart"
+  tags:
+    - jb
+
+- name: "Enable and start the journalbeats systemd service"
+  systemd:
+    name: journalbeats
+    state: started
+    enabled: True
+    daemon_reload: yes
+  tags:
+    - jb

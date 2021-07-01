@@ -1,0 +1,44 @@
+[Unit]
+Description=Elastic Search Exporter running in docker container
+# Start this unit only after docker has started
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+TimeoutStartSec=0
+Restart=always
+# The following lines start with '-' because they are allowed to fail without
+# causing startup to fail.
+#
+
+# Kill the old instance, if it's still running for some reason
+ExecStartPre=-/usr/bin/docker stop {{ elasticsearch_container_name }}
+# Remove the old instance, if it stuck around
+ExecStartPre=-/usr/bin/docker rm {{ elasticsearch_container_name }}
+ExecStart=/usr/bin/docker run                              \
+  --rm                                                     \
+  -t                                                       \
+  --name={{ elasticsearch_container_name}}                   \
+  -p "9114:9114"                                            \
+  {{ elasticsearch_container }}:{{elasticsearch_version}}  \
+  {% for arg in es_arguments_true %}
+--es.{{ arg}}            \
+  {% endfor %}
+  {% for args in es_args_values %}
+  --es.{{args.name}}={{ args.value[0] }} \
+  {% endfor %}
+  --es.uri=http://{{ansible_fqdn}}:9200
+
+#
+# We will continue to start over and over again if this process fails or exits
+#
+Restart=on-failure
+RestartSec=5s
+
+# On exit, stop the container
+ExecStop=-/usr/bin/docker stop {{ elasticsearch_container_name }}
+ExecStop=-/usr/bin/docker rm {{ elasticsearch_container_name }}
+[Install]
+WantedBy=multi-user.target
+Alias=elasticsearch
